@@ -14,6 +14,8 @@ Start a session on Windows, close the lid, open your Mac, type `/resume`, keep g
 Memory, `CLAUDE.md`, skills, agents, slash commands, settings **and sessions**, synced peer to peer
 in seconds across all your machines, with an optional VPS relay that only ever stores encrypted data.
 
+<p align="center"><a href="docs/demo.mp4"><img src="docs/demo.gif" alt="Start a Claude Code session on a laptop, close the lid, type /resume on a desktop and keep going" width="820"></a><br><sub>Click for the full-quality video</sub></p>
+
 <p align="center"><img src="docs/architecture.svg" alt="Three computers share one Claude brain peer to peer; an optional VPS relay stores only encrypted data" width="820"></p>
 
 ## Set it up with one sentence
