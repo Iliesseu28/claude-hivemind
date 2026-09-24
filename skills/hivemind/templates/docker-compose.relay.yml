@@ -1,0 +1,22 @@
+# claude-hivemind relay: an always-on Syncthing that only ever stores ENCRYPTED data.
+#
+#   docker compose up -d
+#   then, from your first machine:  python hivemind.py relay-server --ssh user@this-server
+#
+# Firewall: open 22000/tcp and 22000/udp. Never open 8384: the web UI stays on the server's
+# loopback, and hivemind.py reaches it through an SSH tunnel.
+services:
+  syncthing:
+    image: syncthing/syncthing:2
+    container_name: hivemind-relay
+    hostname: hivemind-relay
+    restart: unless-stopped
+    environment:
+      - PUID=1000
+      - PGID=1000
+    volumes:
+      - ./hivemind-relay:/var/syncthing
+    ports:
+      - "22000:22000/tcp"     # sync (TCP)
+      - "22000:22000/udp"     # sync (QUIC)
+      - "127.0.0.1:8384:8384" # web UI and API: loopback only, reached through SSH

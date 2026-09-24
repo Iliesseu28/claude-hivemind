@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+.syncthing-bin/
+.stfolder
+.stignore
+.stversions/
+.DS_Store
+Thumbs.db

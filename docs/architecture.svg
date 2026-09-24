@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 520" width="960" height="520" role="img" aria-label="Three computers keep the same Claude brain in sync peer to peer, with an optional VPS relay that only stores encrypted data">
+  <defs>
+    <marker id="dot" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7">
+      <circle cx="5" cy="5" r="4" fill="#3fb950"/>
+    </marker>
+    <marker id="dotr" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7">
+      <circle cx="5" cy="5" r="4" fill="#d97757"/>
+    </marker>
+    <linearGradient id="card" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#161b22"/>
+      <stop offset="1" stop-color="#11161d"/>
+    </linearGradient>
+  </defs>
+  <style>
+    text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    .h { fill: #e6edf3; font-size: 17px; font-weight: 600; }
+    .t { fill: #c9d1d9; font-size: 13.5px; }
+    .m { fill: #8b949e; font-size: 12.5px; }
+    .g { fill: #3fb950; font-size: 12.5px; font-weight: 600; }
+    .o { fill: #d97757; font-size: 12.5px; font-weight: 600; }
+  </style>
+
+  <rect x="0" y="0" width="960" height="520" rx="18" fill="#0d1117"/>
+
+  <!-- relay -->
+  <rect x="330" y="28" width="300" height="92" rx="12" fill="url(#card)" stroke="#d97757" stroke-width="1.5" stroke-dasharray="5 4"/>
+  <g transform="translate(352 52)">
+    <rect x="0" y="12" width="26" height="20" rx="4" fill="#d97757"/>
+    <path d="M5 12 v-5 a8 8 0 0 1 16 0 v5" fill="none" stroke="#d97757" stroke-width="3"/>
+    <circle cx="13" cy="21" r="3" fill="#0d1117"/>
+  </g>
+  <text x="394" y="64" class="h">VPS relay <tspan class="m">(optional)</tspan></text>
+  <text x="394" y="86" class="t">always on, stores encrypted blobs</text>
+  <text x="394" y="105" class="m">cannot read names or content</text>
+
+  <!-- links to relay -->
+  <path d="M170 300 C 170 200, 300 140, 360 120" fill="none" stroke="#d97757" stroke-width="1.6" stroke-dasharray="6 5" marker-start="url(#dotr)" marker-end="url(#dotr)"/>
+  <path d="M480 300 L 480 122" fill="none" stroke="#d97757" stroke-width="1.6" stroke-dasharray="6 5" marker-start="url(#dotr)" marker-end="url(#dotr)"/>
+  <path d="M790 300 C 790 200, 660 140, 600 120" fill="none" stroke="#d97757" stroke-width="1.6" stroke-dasharray="6 5" marker-start="url(#dotr)" marker-end="url(#dotr)"/>
+  <text x="500" y="196" class="o">encrypted</text>
+
+  <!-- peer links -->
+  <path d="M272 370 L 368 370" stroke="#3fb950" stroke-width="2" marker-start="url(#dot)" marker-end="url(#dot)"/>
+  <path d="M592 370 L 688 370" stroke="#3fb950" stroke-width="2" marker-start="url(#dot)" marker-end="url(#dot)"/>
+  <text x="320" y="360" class="g" text-anchor="middle">P2P</text>
+  <text x="640" y="360" class="g" text-anchor="middle">P2P</text>
+
+  <!-- machines -->
+  <g>
+    <rect x="60" y="300" width="212" height="170" rx="12" fill="url(#card)" stroke="#30363d" stroke-width="1.2"/>
+    <text x="80" y="330" class="h">Windows PC</text>
+    <text x="80" y="358" class="t mono">~/.claude</text>
+    <text x="92" y="382" class="m mono">CLAUDE.md</text>
+    <text x="92" y="402" class="m mono">shared-memory/</text>
+    <text x="92" y="422" class="m mono">skills/ agents/</text>
+    <text x="92" y="442" class="m mono">sessions</text>
+  </g>
+  <g>
+    <rect x="374" y="300" width="212" height="170" rx="12" fill="url(#card)" stroke="#30363d" stroke-width="1.2"/>
+    <text x="394" y="330" class="h">MacBook</text>
+    <text x="394" y="358" class="t mono">~/.claude</text>
+    <text x="406" y="382" class="m mono">CLAUDE.md</text>
+    <text x="406" y="402" class="m mono">shared-memory/</text>
+    <text x="406" y="422" class="m mono">skills/ agents/</text>
+    <text x="406" y="442" class="m mono">sessions</text>
+  </g>
+  <g>
+    <rect x="688" y="300" width="212" height="170" rx="12" fill="url(#card)" stroke="#30363d" stroke-width="1.2"/>
+    <text x="708" y="330" class="h">Linux box</text>
+    <text x="708" y="358" class="t mono">~/.claude</text>
+    <text x="720" y="382" class="m mono">CLAUDE.md</text>
+    <text x="720" y="402" class="m mono">shared-memory/</text>
+    <text x="720" y="422" class="m mono">skills/ agents/</text>
+    <text x="720" y="442" class="m mono">sessions</text>
+  </g>
+
+  <text x="480" y="500" class="m" text-anchor="middle">Never leaves a machine: login token, settings.json, plugins, ~/.claude.json, .env files</text>
+</svg>
