@@ -1,6 +1,6 @@
 {
   "name": "hivemind",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Sync Claude Code memory, CLAUDE.md, skills, agents, commands, settings and sessions across all your machines with Syncthing, plus an optional encrypted VPS relay",
   "author": {
     "name": "Iliesseu28",

@@ -125,6 +125,7 @@ Details and threat model: `references/relay.md`.
 | Peer `has NOT accepted this share yet` | HM not run on that machine | run the same HM command there |
 | Relay stuck below 100%, "no such file" in its log | several connections per device (Syncthing v2) | rerun `HM relay ...`: it sets 1 connection and reconnects |
 | Relay at 0% right after setup | each accepted share restarts, index exchange starts over | wait 15 min, change nothing |
+| An edit takes up to a minute instead of seconds (seen on macOS) | the file watcher went quiet after a share changed; the 60 s rescan still catches the edit | nothing to do; rerun any HM setup command if a share still shows a 3600 s rescan |
 | A skill exists on the Mac, not on Windows | it is a symlink; Windows does not recreate links | replace the link by a real copy |
 | `*.sync-conflict-*` files | the same file changed on two machines before syncing | merge by content, never by date, then delete |
 | Session missing from `/resume` | started with `claude -p`, or another working folder | `claude --resume <id>`, or share that folder's sessions |

@@ -36,13 +36,15 @@ def check(condition, message):
     print(f"     ok: {message}", flush=True)
 
 
-def wait_for(predicate, message, timeout=TIMEOUT):
+def wait_for(predicate, message, timeout=TIMEOUT, diagnose=None):
     deadline = time.time() + timeout
     while time.time() < deadline:
         if predicate():
             print(f"     ok: {message}", flush=True)
             return
         time.sleep(2)
+    if diagnose:
+        print(diagnose(), flush=True)
     raise AssertionError(f"timed out after {timeout}s: {message}")
 
 
@@ -90,6 +92,8 @@ class Instance:
         tree.write(self.config)
         self.key = root.find("gui/apikey").text
         self.log = open(base / f"{name}.log", "w")
+        if os.environ.get("E2E_STTRACE"):
+            env = dict(env, STTRACE=os.environ["E2E_STTRACE"])
         self.proc = subprocess.Popen([binary, "serve", f"--home={self.home}", "--no-browser",
                                       "--no-restart", "--no-upgrade"], env=env,
                                      stdout=self.log, stderr=subprocess.STDOUT)
@@ -159,7 +163,7 @@ class Machine:
 
 def main():
     binary = find_syncthing()
-    base = pathlib.Path(tempfile.mkdtemp(prefix="hivemind-e2e-"))
+    base = pathlib.Path(tempfile.mkdtemp(prefix="hivemind-e2e-", dir=os.environ.get("E2E_TMP")))
     print(f"workdir {base}\nsyncthing {binary}")
     instances = []
     try:
@@ -299,7 +303,37 @@ def main():
         wait_for(lambda: not sa.api("GET", "/rest/system/connections")["connections"].get(sb.id, {}).get("connected"),
                  "A and B no longer talk directly")
         a.write("shared-memory/via-relay.md", "MARKER-RELAY\n")
-        wait_for(lambda: b.read("shared-memory/via-relay.md") == "MARKER-RELAY\n", "memory written on A reached B via the relay")
+
+        def relay_diagnosis():
+            report = {}
+            for name, inst in (("A", sa), ("B", sb), ("R", sr)):
+                conns = inst.api("GET", "/rest/system/connections")["connections"]
+                folders = inst.api("GET", "/rest/config/folders")
+                report[name] = {
+                    "connected": sorted(d[:7] for d, c in conns.items() if c.get("connected")),
+                    "folders": {f["id"]: {k: inst.api("GET", f"/rest/db/status?folder={f['id']}").get(k)
+                                          for k in ("state", "needFiles", "errors", "pullErrors",
+                                                    "localFiles", "globalFiles", "watchError")}
+                                for f in folders},
+                    "folderErrors": {f["id"]: inst.api("GET", f"/rest/folder/errors?folder={f['id']}").get("errors")
+                                     for f in folders},
+                }
+                if inst is not sr:
+                    report[name]["relayCompletion"] = {
+                        f["id"]: inst.api("GET", f"/rest/db/completion?folder={f['id']}&device={sr.id}")
+                        for f in folders}
+            sa.api("POST", "/rest/db/scan?folder=hivemind-brain")
+            time.sleep(30)
+            report["after manual scan on A"] = {
+                "A localFiles": sa.api("GET", "/rest/db/status?folder=hivemind-brain").get("localFiles"),
+                "reached B": b.read("shared-memory/via-relay.md") == "MARKER-RELAY\n"}
+            for name, inst in (("A", sa), ("B", sb)):
+                inst.log.flush()
+                lines = pathlib.Path(inst.log.name).read_text(encoding="utf-8", errors="replace").splitlines()
+                report[name]["log"] = [ln for ln in lines if re.search(r"(?i)watch|notify|scan|fsevent|kqueue", ln)][-60:]
+            return "DIAGNOSIS " + json.dumps(report, indent=1, default=str)
+        wait_for(lambda: b.read("shared-memory/via-relay.md") == "MARKER-RELAY\n",
+                 "memory written on A reached B via the relay", diagnose=relay_diagnosis)
 
         step("remove: shares gone, hook gone, files kept")
         b.hive("remove")

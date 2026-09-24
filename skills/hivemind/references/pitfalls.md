@@ -37,6 +37,12 @@ to send, which shows up as wrong counters. `hivemind.py` writes the same one on 
 On Windows, Syncthing may mark it hidden and Python cannot overwrite a hidden file: the script
 clears the attribute first.
 
+**On macOS, the file watcher can go quiet.** On a macOS CI runner (Syncthing 2.1.2), after a
+share was reconfigured the watcher stopped reporting edits: a new memory file only left at the
+next full rescan, one hour later with Syncthing's default. It is easy to miss, because every
+config change also triggers a full scan, so setup looks fine and only later edits stall.
+`hivemind.py` sets a 60 second rescan on its shares: even then, an edit leaves within a minute.
+
 **`settings.json` must not travel whole.** It holds OS-specific hook commands (`python.exe` vs
 `python3`), permissions with local paths, plugin paths. Share only chosen keys through
 `~/.claude/hivemind/shared-settings.json`; the SessionStart hook merges them on each machine.

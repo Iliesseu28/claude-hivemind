@@ -41,7 +41,10 @@ import urllib.parse
 import urllib.request
 import xml.etree.ElementTree as ET
 
-VERSION = "1.0.0"
+VERSION = "1.0.1"
+# Full rescan period of every share. The watcher reports edits within seconds, but on macOS it
+# was seen going quiet after a share was reconfigured; this caps the delay at one minute.
+RESCAN_S = 60
 PREFIX = "hivemind-"
 BRAIN_ID = "hivemind-brain"
 HOME_SESSIONS_ID = "hivemind-sessions-home"
@@ -309,13 +312,15 @@ def put_folder(st, fid, path, ftype, device_ids, label):
         if missing:
             current["devices"] += [folder_device(x) for x in missing]
             st.api("PATCH", f"/rest/config/folders/{fid}", {"devices": current["devices"]})
+        if current.get("rescanIntervalS", 0) > RESCAN_S:
+            st.api("PATCH", f"/rest/config/folders/{fid}", {"rescanIntervalS": RESCAN_S})
         return "already there" + (f", {len(missing)} machine(s) added" if missing else "")
     obj = st.api("GET", "/rest/config/defaults/folder") or {}
     versioning = dict(obj.get("versioning") or {})
     versioning.update(type="trashcan", params={"cleanoutDays": "30"})
     obj.update({"id": fid, "label": label, "path": str(path), "type": ftype,
                 "devices": [folder_device(x) for x in device_ids], "paused": False,
-                "rescanIntervalS": 3600, "fsWatcherEnabled": True, "fsWatcherDelayS": 10,
+                "rescanIntervalS": RESCAN_S, "fsWatcherEnabled": True, "fsWatcherDelayS": 10,
                 "versioning": versioning})
     st.api("PUT", f"/rest/config/folders/{fid}", obj)
     return f"created ({ftype})"

@@ -25,9 +25,19 @@ jobs:
         with:
           python-version: "3.12"
       - name: Download Syncthing
+        if: runner.os != 'macOS'
         shell: bash
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: echo "SYNCTHING_BIN=$(python tests/get_syncthing.py)" >> "$GITHUB_ENV"
+      - name: Install Syncthing (macOS, the app the setup guide installs)
+        if: runner.os == 'macOS'
+        run: |
+          brew install --cask syncthing-app
+          bin=/Applications/Syncthing.app/Contents/Resources/syncthing/syncthing
+          "$bin" --version
+          echo "SYNCTHING_BIN=$bin" >> "$GITHUB_ENV"
       - name: End-to-end test (3 Syncthing instances, relay included)
+        env:
+          E2E_TMP: ${{ runner.temp }}
         run: python tests/e2e_test.py
